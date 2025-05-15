@@ -6,10 +6,11 @@ import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import Layout from "./pages/Layout";
-import AdminRegistration from './pages/admin/AdminRegistration';
-import AdminLogin from './pages/admin/AdminLogin';
-import AdminLayout from './pages/admin/AdminLayout';
-import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminRegistration from "./pages/admin/AdminRegistration";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ManageVenues from "./pages/admin/ManageVenues";
 import { useSelector } from "react-redux";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         {/* Admin Dashboard Routes */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="venues/manage" element={<ManageVenues />} />
         </Route>
 
         {/* Main Routes with Layout */}
@@ -47,7 +49,13 @@ function App() {
           />
           <Route
             path="admin/register"
-            element={!access_token ? <AdminRegistration /> : <Navigate to="/dashboard" />}
+            element={
+              !access_token ? (
+                <AdminRegistration />
+              ) : (
+                <Navigate to="/dashboard" />
+              )
+            }
           />
         </Route>
 
