@@ -11,6 +11,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageVenues from "./pages/admin/ManageVenues";
+import VenueAdd from "./pages/admin/Venue/VenueAdd";
 import { useSelector } from "react-redux";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="venues/manage" element={<ManageVenues />} />
+          <Route path="venues/add" element={<VenueAdd />} />
         </Route>
 
         {/* Main Routes with Layout */}
