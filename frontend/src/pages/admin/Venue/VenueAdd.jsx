@@ -235,6 +235,55 @@ const AddVenue = () => {
         </>
       )}
 
+      <div className="md:col-span-2">
+        <label className="block mb-1 font-semibold text-gray-700">
+          Venue Photos
+        </label>
+        <div className="flex flex-col space-y-4">
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 transition-colors">
+            <svg className="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            <p className="text-gray-600 text-sm text-center">
+              Drag and drop photos here or click to select
+            </p>
+            <input
+              type="file"
+              name="photos"
+              accept="image/*"
+              multiple
+              onChange={(e) => handleFiles(e.target.files)}
+              className="hidden"
+              id="photoInput"
+            />
+            <label htmlFor="photoInput" className="cursor-pointer mt-2">
+              <span className="text-blue-600">Click to select photos</span>
+            </label>
+          </div>
+
+          {venue.photos.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {venue.photos.map((photo, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={URL.createObjectURL(photo)}
+                    alt="Venue"
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(index)}
+                    className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
       <div>
         <label className="block mb-1 font-semibold text-gray-700">
           Venue Name
@@ -347,7 +396,7 @@ const AddVenue = () => {
         }
       />
 
-      <div className="md:col-span-2">
+      {/* <div className="md:col-span-2">
         <label className="block mb-1 font-semibold text-gray-700">
           Upload Photos
         </label>
@@ -396,7 +445,7 @@ const AddVenue = () => {
             })}
           </div>
         )}
-      </div>
+      </div> */}
 
       <button
         type="submit"
