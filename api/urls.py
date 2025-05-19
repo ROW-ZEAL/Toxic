@@ -1,13 +1,7 @@
 from django.urls import path
-from . import views
-
-
+from .views import *
+from .api_venue_details import api_venues_data  
 
 urlpatterns = [
-    # path('catrogry', views.show_sports_category, name="api"),
-   
-
-
-
-
+    path('venues/', api_venues_data, name="venue_api"),
 ]

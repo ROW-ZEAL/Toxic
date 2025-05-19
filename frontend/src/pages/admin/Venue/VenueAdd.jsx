@@ -161,16 +161,42 @@ const AddVenue = () => {
     e.preventDefault();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitted venue:", {
-      ...venue,
-      photos: venue.photos.map((file) => file.name),
-    });
-    alert("Venue submitted!");
-    setVenue(initialVenueState);
-  };
 
+    const formData = new FormData();
+    formData.append("name", venue.name);
+    formData.append("location", venue.location);
+    formData.append("capacity", venue.capacity);
+    formData.append("type", venue.type);
+    formData.append("status", venue.status);
+    formData.append("price", venue.price);
+    formData.append("description", venue.description);
+    formData.append("ownerName", adminInfo.name);
+    formData.append("ownerEmail", adminInfo.email);
+
+    venue.facilities.forEach((facility, index) =>
+      formData.append(`facilities[${index}]`, facility)
+    );
+    venue.sportCategories.forEach((category, index) =>
+      formData.append(`sportCategories[${index}]`, category)
+    );
+    venue.photos.forEach((photo, index) => formData.append(`photos`, photo));
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/venues/", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      console.log("Server response:", result);
+      alert("Venue submitted!");
+      setVenue(initialVenueState);
+    } catch (error) {
+      console.error("Error submitting venue:", error);
+    }
+  };
   return (
     <form
       onSubmit={handleSubmit}
