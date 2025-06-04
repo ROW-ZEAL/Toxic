@@ -26,6 +26,9 @@ import AddSlots from "./pages/admin/Venue/AddSlots";
 // Pages
 import CategoryPage from "./pages/Homes/Venue/CategoryPage";
 import BookingPage from "./pages/Homes/Venue/BookingPage";
+import BookingConfirmation from "./pages/Homes/Venue/BookingConfirmation";
+import OfflinePayment from "./pages/Homes/Venue/Payment/OfflinePayment";
+import OnlinePayment from "./pages/Homes/Venue/Payment/OnlinePayment";
 
 function App() {
   const { access_token } = useSelector((state) => state.auth);
@@ -75,6 +78,12 @@ function App() {
           />
           <Route path="category/:categoryName" element={<CategoryPage />} />
           <Route path="/book/:id" element={<BookingPage />} />
+          <Route
+            path="/booking-confirmation"
+            element={<BookingConfirmation />}
+          />
+          <Route path="/online-payment" element={<OnlinePayment />} />
+          <Route path="/offline-payment" element={<OfflinePayment />} />
         </Route>
 
         {/* Fallback route for 404 */}

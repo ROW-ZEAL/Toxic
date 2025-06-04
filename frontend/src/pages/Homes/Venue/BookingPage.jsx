@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 const BookingPage = () => {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const venueName = location.state?.venueName || "Unknown Venue";
 
   const [venueDetails, setVenueDetails] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [isBooking, setIsBooking] = useState(false);
 
   useEffect(() => {
     const fetchVenueDetails = async () => {
@@ -32,10 +34,19 @@ const BookingPage = () => {
 
   const handleBooking = () => {
     if (selectedSlot) {
-      alert(
-        `Booking confirmed for ${venueName} from ${selectedSlot.start_time} to ${selectedSlot.end_time} on ${selectedSlot.schedule_date}`
-      );
-      // Here you would typically send a booking request to your backend
+      setIsBooking(true);
+      // In a real app, you would send booking data to your backend here
+      // Then navigate to confirmation page with the booking details
+      navigate("/booking-confirmation", {
+        state: {
+          venueName,
+          venueImage: venueDetails.Venue[0].venue_image,
+          date: selectedSlot.schedule_date,
+          time: `${selectedSlot.start_time} - ${selectedSlot.end_time}`,
+          price: venueDetails.Venue[0].price,
+          location: venueDetails.Venue[0].location,
+        },
+      });
     }
   };
 
@@ -50,7 +61,7 @@ const BookingPage = () => {
     );
   }
 
-  // Get the first item to display general venue info (since all have the same details)
+  // Get the first item to display general venue info
   const firstVenue = venueDetails.Venue[0];
   const facilities = JSON.parse(firstVenue.facilities || "[]");
   const sports = JSON.parse(firstVenue.sport_categories || "[]");
@@ -165,7 +176,7 @@ const BookingPage = () => {
                           ? selectedSlot?.start_time === slot.start_time
                             ? "border-blue-500 bg-blue-50"
                             : "border-green-300 hover:border-green-500 bg-green-50 hover:bg-green-100"
-                          : "border-gray-200 bg-gray-100 cursor-not-allowed"
+                          : "border-red-200 bg-red-50 cursor-not-allowed"
                       } transition-colors duration-200`}
                       disabled={!slot.available}
                     >
@@ -175,10 +186,10 @@ const BookingPage = () => {
                         </p>
                         <p
                           className={`text-sm ${
-                            slot.available ? "text-green-600" : "text-gray-500"
+                            slot.available ? "text-green-600" : "text-red-600"
                           }`}
                         >
-                          {slot.available ? "Available" : "Booked"}
+                          {slot.available ? "Available" : "Unavailable"}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
                           {slot.schedule_date}
@@ -206,9 +217,10 @@ const BookingPage = () => {
                     </div>
                     <button
                       onClick={handleBooking}
-                      className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200"
+                      disabled={isBooking}
+                      className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-75 disabled:cursor-not-allowed"
                     >
-                      Confirm Booking
+                      {isBooking ? "Processing..." : "Confirm Booking"}
                     </button>
                   </div>
                 </div>
