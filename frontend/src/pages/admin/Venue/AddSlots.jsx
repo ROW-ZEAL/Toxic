@@ -64,7 +64,7 @@ const AddSlots = () => {
     return isAfter(date, today) || date.getTime() === today.getTime();
   };
 
-  const handleSaveSlots = () => {
+  const handleSaveSlots = async () => {
     if (!selectedVenue) {
       console.warn("No venue selected.");
       return;
@@ -82,20 +82,32 @@ const AddSlots = () => {
       : "https://via.placeholder.com/150";
 
     const dataToSave = {
-      venueName: selectedVenue.name,
-      venueImage,
-      selectedDate: selectedDate.toDateString(),
+      venue_name: selectedVenue.name,
+      venue_image: venueImage,
+      schedule_date: selectedDate.toISOString().split("T")[0], // YYYY-MM-DD
       slots: timeSlots.map((slot) => ({
-        start: slot.start,
-        end: slot.end,
+        start_time: slot.start,
+        end_time: slot.end,
         available: slot.available,
         color: slot.available ? "green" : "gray",
       })),
     };
 
-    console.log("📝 Data to Save:", dataToSave);
-
-    setSaved(true);
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/slots/",
+        dataToSave,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("✅ Slots saved:", response.data);
+      setSaved(true);
+    } catch (error) {
+      console.error("❌ Failed to save slots:", error);
+    }
   };
 
   return (

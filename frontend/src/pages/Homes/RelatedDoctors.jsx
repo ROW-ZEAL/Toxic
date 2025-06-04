@@ -7,6 +7,19 @@ const RelatedDoctors = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Helper to get first category from JSON string
+  const getFirstCategory = (catString) => {
+    try {
+      const categories = JSON.parse(catString);
+      if (Array.isArray(categories) && categories.length > 0) {
+        return categories[0];
+      }
+    } catch {
+      return "";
+    }
+    return "";
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,16 +55,26 @@ const RelatedDoctors = () => {
         Browse through our available sports venues.
       </p>
 
-      {/* 3-column, 2-row grid container */}
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-        {venues.slice(0, 6).map(
-          (
-            venue // Show only first 6 venues
-          ) => (
+        {venues.slice(0, 6).map((venue, index) => {
+          let imageUrl =
+            "https://via.placeholder.com/300x200?text=Sports+Venue";
+          try {
+            const photoArray = JSON.parse(venue.photos);
+            if (Array.isArray(photoArray) && photoArray.length > 0) {
+              imageUrl = `http://127.0.0.1:8000/media/${photoArray[0]}`;
+            }
+          } catch (err) {
+            console.warn("Failed to parse photos:", err);
+          }
+
+          const firstCategory = getFirstCategory(venue.sport_categories);
+
+          return (
             <div
-              key={venue.id}
+              key={index}
               onClick={() => {
-                navigate(`/appointment/${venue.id}`);
+                navigate(`/category/${encodeURIComponent(firstCategory)}`);
                 window.scrollTo(0, 0);
               }}
               className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-5px] transition-all duration-300 shadow-md hover:shadow-lg"
@@ -59,7 +82,7 @@ const RelatedDoctors = () => {
               <div className="relative h-48 bg-blue-50">
                 <img
                   className="w-full h-full object-cover"
-                  src={venue.icon}
+                  src={imageUrl}
                   alt={venue.name}
                   onError={(e) => {
                     e.target.onerror = null;
@@ -74,12 +97,12 @@ const RelatedDoctors = () => {
                   <span>Available</span>
                 </div>
                 <p className="text-gray-900 text-lg font-medium mt-1">
-                  {venue.name}
+                  {firstCategory}
                 </p>
               </div>
             </div>
-          )
-        )}
+          );
+        })}
       </div>
     </div>
   );

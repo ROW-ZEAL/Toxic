@@ -1,19 +1,31 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import LoginReg from "./pages/auth/LoginReg";
-import ResetPassword from "./pages/auth/ResetPassword";
-import SendPasswordResetEmail from "./pages/auth/SendPasswordResetEmail ";
+import { useSelector } from "react-redux";
+
+// Main Layout & Pages
 import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import Layout from "./pages/Layout";
+
+// Auth Pages
+import LoginReg from "./pages/auth/LoginReg";
+import ResetPassword from "./pages/auth/ResetPassword";
+import SendPasswordResetEmail from "./pages/auth/SendPasswordResetEmail ";
+
+// Admin Auth & Layout
 import AdminRegistration from "./pages/admin/AdminRegistration";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+
+// Admin Venue Management
 import ManageVenues from "./pages/admin/ManageVenues";
 import VenueAdd from "./pages/admin/Venue/VenueAdd";
 import AddSlots from "./pages/admin/Venue/AddSlots";
-import { useSelector } from "react-redux";
+
+// Pages
+import CategoryPage from "./pages/Homes/Venue/CategoryPage";
+import BookingPage from "./pages/Homes/Venue/BookingPage";
 
 function App() {
   const { access_token } = useSelector((state) => state.auth);
@@ -61,6 +73,8 @@ function App() {
               )
             }
           />
+          <Route path="category/:categoryName" element={<CategoryPage />} />
+          <Route path="/book/:id" element={<BookingPage />} />
         </Route>
 
         {/* Fallback route for 404 */}
