@@ -1,10 +1,10 @@
-// BookingConfirmation.js
 import React from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 
 const BookingConfirmation = () => {
   const location = useLocation();
   const bookingDetails = location.state;
+  const navigate = useNavigate();
 
   if (!bookingDetails) {
     return (
@@ -30,9 +30,71 @@ const BookingConfirmation = () => {
     venueName = "Unknown Venue",
     location: venueLocation = "Unknown Location",
     date = "Not Specified",
-    time = "Not Specified",
     price = "N/A",
+    startTime: rawStartTime,
+    endTime: rawEndTime,
+    time,
   } = bookingDetails;
+
+  let startTime = "Not Provided";
+  let endTime = "Not Provided";
+
+  if (rawStartTime && rawEndTime) {
+    startTime = rawStartTime;
+    endTime = rawEndTime;
+  } else if (time) {
+    const times = time.split(" - ");
+    if (times.length === 2) {
+      startTime = times[0];
+      endTime = times[1];
+    }
+  }
+
+  const handlePayAtVenueClick = async () => {
+    if (!venueName || !startTime || !endTime) {
+      alert("Invalid booking details for API call.");
+      return;
+    }
+
+    const encodedStartTime = encodeURIComponent(startTime);
+    const encodedEndTime = encodeURIComponent(endTime);
+
+    const url = `http://127.0.0.1:8000/api/checkslots/${encodeURIComponent(
+      venueName
+    )}/${encodedStartTime}/${encodedEndTime}/`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const text = await response.text();
+
+      try {
+        const data = JSON.parse(text);
+
+        if (response.ok && data.status === "success") {
+          console.log("API response:", data);
+          alert(
+            `Booking confirmed! Venue: ${data.venue}, Time: ${data.startTime} - ${data.endTime}`
+          );
+          // Pass bookingDetails in state to OfflinePayment page
+          navigate("/offline-payment", { state: { bookingDetails } });
+        } else {
+          alert(`API error: ${data.message || "Unknown error"}`);
+        }
+      } catch (jsonErr) {
+        console.error("Failed to parse JSON:", jsonErr, "Response text:", text);
+        alert("Invalid response format from server.");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      alert("Failed to check booking slots. Please try again later.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -75,7 +137,9 @@ const BookingConfirmation = () => {
                     <h3 className="text-sm font-medium text-gray-500">
                       Time Slot
                     </h3>
-                    <p className="text-gray-800">{time}</p>
+                    <p className="text-gray-800">
+                      {startTime} - {endTime}
+                    </p>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500">
@@ -99,13 +163,12 @@ const BookingConfirmation = () => {
                 >
                   Pay Online
                 </Link>
-                <Link
-                  to="/offline-payment"
-                  state={{ bookingDetails }}
+                <button
+                  onClick={handlePayAtVenueClick}
                   className="flex-1 px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg shadow-sm text-center transition duration-200"
                 >
                   Pay at Venue
-                </Link>
+                </button>
               </div>
               <p className="text-sm text-gray-500 mt-4">
                 Note: Your booking will be finalized after payment is received.

@@ -6,6 +6,7 @@ from .api_venue_data import *
 from .api_slots_details import *
 from .api_sports_venue_details import *
 from .api_booking_slots import *
+from .booking_schedule import *
 
 @api_view(['GET'])
 def show_sports_category(request):
@@ -18,6 +19,14 @@ def show_venue_list(request,ownerName):
 @api_view(['GET'])
 def show_venue_details(request,VenueName):
     return Response(api_show_venue_detail(VenueName))
+
+@api_view(['GET'])
+def check_booking_slots(request, venue, start, end):
+    start = start.strip()
+    end = end.strip()
+    data = api_slot_availability(venue, start, end)
+    return Response(data)
+
 
 
 @api_view(['GET'])
