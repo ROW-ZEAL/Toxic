@@ -2,11 +2,15 @@ import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import { FiDownload, FiArrowLeftCircle } from "react-icons/fi";
+import { useSelector } from "react-redux";
+import { selectUserInfo } from "../../../../features/userSlice";
 
 const OfflinePayment = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const bookingDetails = location.state?.bookingDetails;
+
+  const user = useSelector(selectUserInfo); // Get user data from Redux
 
   useEffect(() => {
     if (!bookingDetails) {
@@ -21,6 +25,7 @@ const OfflinePayment = () => {
       Location: ${bookingDetails?.location}
       Contact: +91 9876543210
       Email: info@venue.com
+      Booked by: ${user.name} (${user.email})
       Note: Pay at venue before session starts.
     `;
     const blob = new Blob([text], { type: "text/plain" });
@@ -31,6 +36,12 @@ const OfflinePayment = () => {
   };
 
   const handleBack = () => {
+    console.log("🔁 Booking Details:");
+    console.table({
+      ...bookingDetails,
+      bookedBy: user.name,
+      email: user.email,
+    });
     navigate("/");
   };
 
@@ -72,6 +83,17 @@ const OfflinePayment = () => {
           <div className="text-gray-700 flex items-start">
             <FaEnvelope className="mt-1 mr-3 text-gray-600" />
             <span>info@venue.com</span>
+          </div>
+
+          <div className="text-gray-700 flex items-start pt-2">
+            <strong>Booked by:</strong>&nbsp;
+            {user && user.name ? (
+              <>
+                {user.name} ({user.email})
+              </>
+            ) : (
+              "Loading..."
+            )}
           </div>
         </div>
 

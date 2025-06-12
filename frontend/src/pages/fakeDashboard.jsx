@@ -7,6 +7,7 @@ import ChangePassword from "./auth/ChangePassword ";
 import { useGetLoggedUserQuery } from "../services/userAuthApi";
 import { useEffect, useState } from "react";
 import { setUserInfo, unsetUserInfo } from "../features/userSlice";
+
 const Dashboard = () => {
   const handleLogout = () => {
     dispatch(unsetUserInfo({ name: "", email: "" }));

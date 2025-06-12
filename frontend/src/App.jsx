@@ -1,9 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 
 // Main Layout & Pages
 import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
+import fakeDashboard from "./pages/fakeDashboard";
 import Home from "./pages/Home";
 import Layout from "./pages/Layout";
 
@@ -29,9 +31,25 @@ import BookingPage from "./pages/Homes/Venue/BookingPage";
 import BookingConfirmation from "./pages/Homes/Venue/BookingConfirmation";
 import OfflinePayment from "./pages/Homes/Venue/Payment/OfflinePayment";
 import OnlinePayment from "./pages/Homes/Venue/Payment/OnlinePayment";
+import { useGetLoggedUserQuery } from "./services/userAuthApi";
+import { setUserInfo } from "./features/userSlice";
 
 function App() {
   const { access_token } = useSelector((state) => state.auth);
+  const { data, isSuccess } = useGetLoggedUserQuery(access_token);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      dispatch(
+        setUserInfo({
+          email: data.email,
+          name: data.name,
+          is_admin: data.is_admin,
+        })
+      );
+    }
+  }, [isSuccess, data, dispatch]);
 
   return (
     <BrowserRouter>
@@ -84,6 +102,7 @@ function App() {
           />
           <Route path="/online-payment" element={<OnlinePayment />} />
           <Route path="/offline-payment" element={<OfflinePayment />} />
+          <Route path="/o" element={<fakeDashboard />} />
         </Route>
 
         {/* Fallback route for 404 */}
